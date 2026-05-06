@@ -1,21 +1,7 @@
-import { CanvasLocal } from "./canvasLocal.js";
-// 1. Obtener el canvas con el ID exacto de tu HTML: "circlechart"
-const canvas = document.getElementById('circlechart');
-const graphics = canvas.getContext('2d');
-if (graphics) {
-    const plotter = new CanvasLocal(graphics, canvas);
-    plotter.paint(); // Dibujo inicial
-    document.getElementById('graficar').addEventListener('click', () => {
-        const input = document.getElementById('funInput');
-        if (input.value) {
-            plotter.setFunction(input.value);
-        }
-    });
-    // 3. Botones de Zoom: IDs "btnZoomIn" y "btnZoomOut"
-    document.getElementById('acercar').addEventListener('click', () => {
-        plotter.setZoom(0.8);
-    });
-    document.getElementById('alejar').addEventListener('click', () => {
-        plotter.setZoom(1.2);
-    });
-}
+import { CanvasLocal } from './canvasLocal.js';
+let canvas;
+let graphics;
+canvas = document.getElementById('circlechart');
+graphics = canvas.getContext('2d');
+const miCanvas = new CanvasLocal(graphics, canvas);
+miCanvas.paint();
