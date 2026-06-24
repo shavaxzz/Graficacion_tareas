@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ventilador CPU — Visor 3D</title>
+  <link rel="stylesheet" href="./style/index2.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__mark">&#10227;</span>
+      <span class="topbar__title">VENTILADOR<span class="topbar__title-accent">CPU</span></span>
+    </div>
+    <nav class="topbar__nav">
+      <div class="menu">
+        <button class="menu__trigger" id="menuCamara">Cámara</button>
+        <div class="menu__panel">
+          <button class="menu__item" id="eyeUp">Subir vista</button>
+          <button class="menu__item" id="eyeDown">Bajar vista</button>
+          <button class="menu__item" id="eyeLeft">Girar a la derecha</button>
+          <button class="menu__item" id="eyeRight">Girar a la izquierda</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="layout">
+
+    <section class="viewer">
+      <div class="viewer__frame">
+        <canvas id="circlechart" width="640" height="400"></canvas>
+        <div class="viewer__axis" aria-hidden="true">
+          <span class="axis axis--x">X</span>
+          <span class="axis axis--y">Y</span>
+          <span class="axis axis--z">Z</span>
+        </div>
+      </div>
+      <p class="viewer__caption">Arrastre sobre el lienzo para mover el objeto.</p>
+    </section>
+
+    <aside class="panel">
+
+      <div class="panel__block">
+        <h2 class="panel__heading">01 — Cargar modelo</h2>
+        <p class="panel__hint">Selecciona el archivo .txt exportado desde Blender.</p>
+        <label class="filepicker">
+          <input type="file" id="file-input" accept=".txt" />
+          <span class="filepicker__label">Elegir archivo .txt</span>
+        </label>
+      </div>
+
+      <div class="panel__block">
+        <h2 class="panel__heading">02 — Piezas del modelo</h2>
+        <ul class="parts">
+          <li><span class="parts__dot parts__dot--fixed"></span>Carcasa <em>(fija)</em></li>
+          <li><span class="parts__dot parts__dot--fixed"></span>Aro / soportes <em>(fijos)</em></li>
+          <li><span class="parts__dot parts__dot--fixed"></span>Buje central <em>(fijo)</em></li>
+          <li><span class="parts__dot parts__dot--moving"></span>Aspas <em>(rotan)</em></li>
+        </ul>
+      </div>
+
+      <div class="panel__block">
+        <h2 class="panel__heading">03 — Mover aspas</h2>
+        <div class="rotate-controls">
+          <button class="rotate-btn" id="pza1IzqPanel">&#10226;<span>Izquierda</span></button>
+          <button class="rotate-btn" id="pza1DerPanel">&#10227;<span>Derecha</span></button>
+        </div>
+        <button class="auto-btn" id="autoGirarBtn">&#9655;<span>Girar automaticamente</span></button>
+      </div>
+
+      <div class="panel__block panel__block--ghost">
+        <h2 class="panel__heading">Datos del archivo</h2>
+        <pre id="contenido-archivo" class="raw"></pre>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <footer class="footer">
+    <span>Proyecto final · Graficación 3D</span>
+  </footer>
+
+  <!-- Botones que index.ts necesita por su ID exacto. No se muestran en pantalla
+       (ver .hidden-controls en el CSS); el panel lateral los activa por código. -->
+  <div class="hidden-controls" aria-hidden="true">
+    <button id="pza1Izq"></button>
+    <button id="pza1Der"></button>
+    <button id="incrDist"></button>
+    <button id="decrDist"></button>
+  </div>
+
+  <script src="./dist/src/index.js" type="module"></script>
+  <script>
+    document.getElementById('pza1IzqPanel').addEventListener('click', () => {
+      document.getElementById('pza1Izq').click();
+    });
+    document.getElementById('pza1DerPanel').addEventListener('click', () => {
+      document.getElementById('pza1Der').click();
+    });
+
+    // Rotación automática: simula el giro continuo del ventilador
+    // llamando repetidamente al mismo botón "Derecha" cada 80ms.
+    let autoGirando = false;
+    let autoIntervalId = null;
+    const autoBtn = document.getElementById('autoGirarBtn');
+
+    autoBtn.addEventListener('click', () => {
+      autoGirando = !autoGirando;
+      if (autoGirando) {
+        autoBtn.classList.add('is-active');
+        autoBtn.innerHTML = '&#10073;&#10073;<span>Detener</span>';
+        autoIntervalId = setInterval(() => {
+          document.getElementById('pza1Der').click();
+        }, 80);
+      } else {
+        autoBtn.classList.remove('is-active');
+        autoBtn.innerHTML = '&#9655;<span>Girar automático</span>';
+        clearInterval(autoIntervalId);
+      }
+    });
+
+    document.querySelectorAll('.menu__trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const panel = btn.nextElementSibling;
+        const isOpen = panel.classList.contains('is-open');
+        document.querySelectorAll('.menu__panel').forEach(p => p.classList.remove('is-open'));
+        if (!isOpen) panel.classList.add('is-open');
+        e.stopPropagation();
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.menu__panel').forEach(p => p.classList.remove('is-open'));
+    });
+  </script>
+</body>
+</html>
